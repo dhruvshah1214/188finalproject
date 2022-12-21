@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "cron"
+version = "0.1.0"
+description = ""
+authors = ["Dhruv Shah <dhruv.shah@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask-Bcrypt = "^1.0.1"
+greenlet = "^2.0.1"
+psycopg2 = "^2.9.5"
+PyJWT = "^2.6.0"
+redis = "^4.4.0"
+SQLAlchemy = "^1.4.45"
+six = "^1.16.0"
+beautifulsoup4 = "^4.11.1"
+requests = "^2.28.1"
+diff-match-patch = "^20200713"
+sendgrid = "^6.9.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

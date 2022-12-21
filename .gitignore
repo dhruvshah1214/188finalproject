@@ -1,0 +1,6 @@
+*secret*
+__pycache__
+.pytest_cache
+.vscode
+.metals
+**/.env

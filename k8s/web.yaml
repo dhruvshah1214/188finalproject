@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      imagePullSecrets:
+      - name: docker-registry-secret
+      containers:
+      - name: web
+        image: ghcr.io/dhruvshah1214/cis188fp-web:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PORT
+          value: 8000
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: POSTGRES_HOST_URL
+          value: "cis188fp-db.ccjcvs49potj.us-east-1.rds.amazonaws.com:5432"
+        - name: POSTGRES_DB_NAME
+          value: "cis188fp-db"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+        - name: ADMIN_RESTRICTED
+          value: "true"
+        - name: ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: web-admin-secret
+              key: username
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web-admin-secret
+              key: password
+        volumeMounts:
+          - name: config-vol
+            mountPath: /app/config/
+      volumes:
+      - name: config-vol
+        configMap:
+          name: config-map
+          items:
+            - key: info.html.j2
+              path: info.html.j2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  selector:
+    app: web
+  ports:
+    - protocol: TCP
+      port: 8000

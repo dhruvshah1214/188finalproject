@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "web"
+version = "0.1.0"
+description = ""
+authors = ["Dhruv Shah <dhruv.shah@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Flask = "^2.2.2"
+Flask-Bcrypt = "^1.0.1"
+Flask-Cors = "^3.0.10"
+SQLAlchemy = "^1.4.45"
+psycopg2 = "^2.9.5"
+PyJWT = "^2.6.0"
+Flask-HTTPAuth = "^4.7.0"
+redis = "^4.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

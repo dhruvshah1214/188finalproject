@@ -1,0 +1,63 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: notifier
+spec:
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: notifier
+              image: cis188fp-cron:latest
+              imagePullPolicy: Never
+              env:
+                - name: PORT
+                  value: "8000"
+                - name: REDIS_URL
+                  value: "redis://redis:6379"
+                - name: POSTGRES_HOST_URL
+                  value: "postgres:5432"
+                - name: POSTGRES_DB_NAME
+                  value: "postgres"
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-secret
+                      key: password
+                - name: ADMIN_RESTRICTED
+                  value: "true"
+                - name: ADMIN_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: web-admin-secret
+                      key: username
+                - name: ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: web-admin-secret
+                      key: password
+                - name: SENDGRID_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: sendgrid-api-key-secret
+                      key: key
+                - name: BCRYPT_LOG_ROUNDS
+                  value: "10"
+              volumeMounts:
+                - mountPath: /app/storage/
+                  name: storage-vol
+          restartPolicy: Never
+          volumes:
+            - name: storage-vol
+              persistentVolumeClaim:
+                claimName: storage-pv-claim
+          
