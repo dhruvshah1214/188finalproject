@@ -61,7 +61,7 @@ jobs:
         with:
           context: ./
           file: ./web/Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: ghcr.io/dhruvshah1214/cis188fp-web:latest
 
       - name: Build and push cronnjob
@@ -69,12 +69,12 @@ jobs:
         with:
           context: ./
           file: ./cron/Dockerfile
-          push: ${{ github.ref == 'refs/heads/master' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: ghcr.io/dhruvshah1214/cis188fp-cron:latest
 
   deploy:
     name: Deploy latest version of code
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     needs: build
 
     runs-on: ubuntu-20.04

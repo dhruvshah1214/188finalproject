@@ -53,8 +53,8 @@ def monitors():
 def get_monitor(monitor_id=None):
     if monitor_id is None:
         return 400
-    monitor = db.query(Monitor).get(monitor_id)
-    if monitor.user_id == auth.current_user.id:
+    monitor = db.query(Monitor).get(int(monitor_id))
+    if monitor.user_id == auth.current_user().id:
         return monitor.as_dict(), 200
     else:
         return {"success": False, "message": "You don't have permission for that"}, 403
@@ -64,10 +64,9 @@ def get_monitor(monitor_id=None):
 def enable_monitor(monitor_id=None):
     if monitor_id is None:
         return 400
-    monitor = db.query(Monitor).get(monitor_id)
-    if monitor.user_id == auth.current_user.id or auth.current_user == "admin":
+    monitor = db.query(Monitor).get(int(monitor_id))
+    if monitor.user_id == auth.current_user.id or auth.current_user() == "admin":
         monitor.enabled = True
-        db.update(monitor)
         db.commit()
         return monitor.as_dict(), 200
     else:
@@ -78,11 +77,38 @@ def enable_monitor(monitor_id=None):
 def disable_monitor(monitor_id=None):
     if monitor_id is None:
         return 400
-    monitor = db.query(Monitor).get(monitor_id)
-    if monitor.user_id == auth.current_user.id or auth.current_user == "admin":
+    monitor = db.query(Monitor).get(int(monitor_id))
+    if monitor.user_id == auth.current_user.id or auth.current_user() == "admin":
         monitor.enabled = False
-        db.update(monitor)
         db.commit()
         return monitor.as_dict(), 200
     else:
         return {"success": False, "message": "You don't have permission for that"}, 403
+
+
+@app.route('/targets/', methods=["POST"]) # turn off monitor
+@auth.login_required
+def disable_monitor():
+    if auth.current_user() is not "admin":
+        return 403
+    post_data = request.get_json()
+    try:
+        id = post_data.get("id", None)
+        url = post_data.get("url", None)
+        selector = post_data.get("selector", None)
+
+        if url == None or selector == None:
+            return {"success": False, "message": f"Null values"}, 400
+        
+        tgt = Target(
+            id=id,
+            url=url,
+            selector=selector
+        )
+        db.add(tgt)
+        db.commit()
+        return {"success": True, "target": tgt.as_dict()}, 200
+    except Exception as e:
+        print(e)
+        return str(e), 500
+    
