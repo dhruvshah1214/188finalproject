@@ -65,7 +65,7 @@ def enable_monitor(monitor_id=None):
     if monitor_id is None:
         return 400
     monitor = db.query(Monitor).get(int(monitor_id))
-    if monitor.user_id == auth.current_user.id or auth.current_user() == "admin":
+    if monitor.user_id == auth.current_user().id or auth.current_user() == "admin":
         monitor.enabled = True
         db.commit()
         return monitor.as_dict(), 200
@@ -78,7 +78,7 @@ def disable_monitor(monitor_id=None):
     if monitor_id is None:
         return 400
     monitor = db.query(Monitor).get(int(monitor_id))
-    if monitor.user_id == auth.current_user.id or auth.current_user() == "admin":
+    if monitor.user_id == auth.current_user().id or auth.current_user() == "admin":
         monitor.enabled = False
         db.commit()
         return monitor.as_dict(), 200
@@ -88,7 +88,7 @@ def disable_monitor(monitor_id=None):
 
 @app.route('/targets/', methods=["POST"]) # turn off monitor
 @auth.login_required
-def disable_monitor():
+def targets():
     if auth.current_user() is not "admin":
         return 403
     post_data = request.get_json()
