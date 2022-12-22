@@ -15,7 +15,7 @@ spec:
         app: web
     spec:
       imagePullSecrets:
-      - name: docker-registry-secret
+      - name: ghcr-registry-secret
       containers:
       - name: web
         image: ghcr.io/dhruvshah1214/cis188fp-web:latest
@@ -23,13 +23,13 @@ spec:
         - containerPort: 8000
         env:
         - name: PORT
-          value: 8000
+          value: "8000"
         - name: REDIS_URL
           value: "redis://redis:6379"
         - name: POSTGRES_HOST_URL
-          value: "cis188fp-db.ccjcvs49potj.us-east-1.rds.amazonaws.com:5432"
+          value: "postgres:5432"
         - name: POSTGRES_DB_NAME
-          value: "cis188fp-db"
+          value: "postgres"
         - name: DB_USERNAME
           valueFrom:
             secretKeyRef:
@@ -52,6 +52,8 @@ spec:
             secretKeyRef:
               name: web-admin-secret
               key: password
+        - name: BCRYPT_LOG_ROUNDS
+          value: "10"
         volumeMounts:
           - name: config-vol
             mountPath: /app/config/
@@ -60,8 +62,8 @@ spec:
         configMap:
           name: config-map
           items:
-            - key: info.html.j2
-              path: info.html.j2
+            - key: allowed-monitors
+              path: allowedmonitors
 ---
 apiVersion: v1
 kind: Service

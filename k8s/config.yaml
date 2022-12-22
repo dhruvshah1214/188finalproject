@@ -7,3 +7,5 @@ data:
   allowed-monitors: |
     bartender-git
     usaco-git
+    mpc-git
+    mset-git

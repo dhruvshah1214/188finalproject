@@ -12,10 +12,11 @@ spec:
     spec:
       template:
         spec:
+          imagePullSecrets:
+          - name: ghcr-registry-secret
           containers:
             - name: notifier
-              image: cis188fp-cron:latest
-              imagePullPolicy: Never
+              image: ghcr.io/dhruvshah1214/cis188fp-cron:latest
               env:
                 - name: PORT
                   value: "8000"

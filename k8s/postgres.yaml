@@ -1,32 +1,24 @@
-kind: PersistentVolume
-apiVersion: v1
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
 metadata:
-  name: postgres-pv-volume  # Sets PV's name
-  labels:
-    type: local  # Sets PV's type to local
-    app: postgres
-spec:
-  storageClassName: manual-db
-  capacity:
-    storage: 5Gi # Sets PV Volume
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/mnt/data/postgres"
+  name: ebs-sc
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  encrypted: 'true'
+volumeBindingMode: WaitForFirstConsumer
 ---
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pv-claim  # Sets name of PVC
-  labels:
-    app: postgres
+  name: postgres-pv-claim
 spec:
-  storageClassName: manual-db
   accessModes:
-    - ReadWriteMany  # Sets read and write access
+    - ReadWriteOnce
+  storageClassName: ebs-sc
   resources:
     requests:
-      storage: 5Gi  # Sets volume size
+      storage: 5Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,7 +40,11 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432  # Exposes container port
+          securityContext:
+            runAsUser: 0
           env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_DB
               value: postgres
             - name: POSTGRES_USER
