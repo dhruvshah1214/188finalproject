@@ -59,14 +59,16 @@ jobs:
       - name: Build and push web
         uses: docker/build-push-action@v3
         with:
-          context: ./web
+          context: ./
+          file: ./web/Dockerfile
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/dhruvshah1214/cis188fp-web:latest
 
       - name: Build and push cronnjob
         uses: docker/build-push-action@v3
         with:
-          context: ./cronjob
+          context: ./
+          file: ./cron/Dockerfile
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/dhruvshah1214/cis188fp-cron:latest
 

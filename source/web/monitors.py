@@ -48,17 +48,41 @@ def monitors():
             print(e)
             return str(e), 500
 
-@app.route('/monitors/<monitor_id>', methods=["GET", "POST"]) # get: get details of monitor, post: update monitor
+@app.route('/monitors/<monitor_id>', methods=["GET"]) # get: get details of monitor, post: update monitor
 @auth.login_required
 def get_monitor(monitor_id=None):
-    return "Hello, {}!".format(auth.current_user())
+    if monitor_id is None:
+        return 400
+    monitor = db.query(Monitor).get(monitor_id)
+    if monitor.user_id == auth.current_user.id:
+        return monitor.as_dict(), 200
+    else:
+        return {"success": False, "message": "You don't have permission for that"}, 403
 
 @app.route('/monitors/<monitor_id>/enable', methods=["POST"]) # turn on monitor
 @auth.login_required
 def enable_monitor(monitor_id=None):
-    return "Hello, {}!".format(auth.current_user())
+    if monitor_id is None:
+        return 400
+    monitor = db.query(Monitor).get(monitor_id)
+    if monitor.user_id == auth.current_user.id or auth.current_user == "admin":
+        monitor.enabled = True
+        db.update(monitor)
+        db.commit()
+        return monitor.as_dict(), 200
+    else:
+        return {"success": False, "message": "You don't have permission for that"}, 403
 
 @app.route('/monitors/<monitor_id>/disable', methods=["POST"]) # turn off monitor
 @auth.login_required
 def disable_monitor(monitor_id=None):
-    return "Hello, {}!".format(auth.current_user())
+    if monitor_id is None:
+        return 400
+    monitor = db.query(Monitor).get(monitor_id)
+    if monitor.user_id == auth.current_user.id or auth.current_user == "admin":
+        monitor.enabled = False
+        db.update(monitor)
+        db.commit()
+        return monitor.as_dict(), 200
+    else:
+        return {"success": False, "message": "You don't have permission for that"}, 403
