@@ -64,7 +64,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: ghcr.io/dhruvshah1214/cis188fp-web:latest
 
-      - name: Build and push cronnjob
+      - name: Build and push cronjob
         uses: docker/build-push-action@v3
         with:
           context: ./
